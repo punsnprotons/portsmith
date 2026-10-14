@@ -1,0 +1,74 @@
+{
+  "name": "portsmith-workbench",
+  "version": "0.6.0-alpha.1",
+  "private": true,
+  "description": "Stage a repository feature in another app and verify a declared behavior contract.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  },
+  "types": "./src/index.d.ts",
+  "files": [
+    "src",
+    "docs",
+    "examples",
+    "scripts/demo.mjs",
+    "scripts/fixture.mjs",
+    "scripts/browser-fixture.mjs",
+    "scripts/demo-browser.mjs",
+    "scripts/demo-autonomous.mjs",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md",
+    "portsmith.model.json",
+    ".env.example"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "portsmith": "./src/cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "demo": "node scripts/demo.mjs",
+    "mcp": "node src/mcp.mjs",
+    "doctor": "node src/cli.mjs doctor",
+    "check": "npm run test:types && npm test && npm run docs:check",
+    "test:types": "tsc -p test/types/tsconfig.json",
+    "docs:generate": "node scripts/generate-reference.mjs",
+    "docs:check": "node scripts/generate-reference.mjs --check",
+    "demo:autonomous": "node --env-file=.env scripts/demo-autonomous.mjs",
+    "browser:install": "playwright install chromium",
+    "demo:browser": "node scripts/demo-browser.mjs",
+    "format": "prettier --write src scripts test",
+    "release:check": "node scripts/release-check.mjs",
+    "release:clean": "node scripts/release-check.mjs --clean",
+    "audit:release": "node scripts/audit-dependencies.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "playwright": "1.61.1",
+    "typescript": "5.9.3",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "vitest": "0.34.0",
+    "vitest-modern": "npm:vitest@4.1.11"
+  },
+  "keywords": [
+    "feature-transfer",
+    "verification",
+    "mcp",
+    "developer-tools"
+  ]
+}

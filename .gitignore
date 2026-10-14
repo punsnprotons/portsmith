@@ -1,0 +1,6 @@
+node_modules/
+.portsmith/
+.DS_Store
+.env
+.env.*
+!.env.example

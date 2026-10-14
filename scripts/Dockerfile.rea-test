@@ -1,0 +1,9 @@
+FROM node:24.11.1-bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends git procps \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/rea
+RUN npm install --ignore-scripts --omit=optional rea-agents@6.4.0
+ENV HOME=/tmp/rea-home
+USER node
+WORKDIR /tmp
+CMD ["node", "/opt/rea/node_modules/rea-agents/scripts/rea.mjs", "--mcp"]
