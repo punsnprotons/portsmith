@@ -1,1 +1,3 @@
-export const version = '0.6.0-alpha.1';
+import metadata from '../../package.json' with { type: 'json' };
+
+export const version = metadata.version;
