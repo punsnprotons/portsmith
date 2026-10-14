@@ -42,6 +42,8 @@ The browser permits requests to the current app origin, blocks service workers, 
 
 Each scenario records a viewport screenshot and Playwright trace under a new `browser-*` directory. The verification report records assertions, errors, browser version and artifact hashes. Export rejects changed or missing evidence. Use `npx playwright show-trace PATH.zip` to inspect a trace locally.
 
+`actionTimeoutMs` controls actions and assertions. Screenshot capture has a separate 10-second limit so font loading and rendering do not inherit short interaction deadlines. The overall verification process deadline still applies to capture and trace finalization. Missing or timed-out evidence fails verification.
+
 A pass requires an error-free baseline with at least one feature mismatch, passing browser regressions before and after integration, every candidate browser case passing, and all existing Node/integrity gates passing. Empty assertions, empty browser regressions, timeouts, skipped work and outdated verification versions cannot authorize export.
 
 Current coverage is Chromium, DOM interactions and a local static/custom-server workflow. Mobile devices, other browser engines, visual-diff tolerances, authenticated sessions and broad real-app compatibility remain unverified.

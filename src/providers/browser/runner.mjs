@@ -83,7 +83,13 @@ try {
         record.error = String(error.message).slice(0, 8000);
       }
       try {
-        await page.screenshot({ path: path.join(output, record.screenshot), fullPage: false });
+        // Evidence capture has its own budget; never relax the frozen behavior deadlines.
+        // The parent verification process still enforces the overall execution deadline.
+        await page.screenshot({
+          path: path.join(output, record.screenshot),
+          fullPage: false,
+          timeout: 10000
+        });
         await context.tracing.stop({ path: path.join(output, record.trace) });
       } catch (error) {
         record.status = 'error';

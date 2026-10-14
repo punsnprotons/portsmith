@@ -11,23 +11,33 @@ jobs:
         node: [22, 24]
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npx playwright install --with-deps chromium
-      - run: npm run check
-      - run: npm run demo
-      - run: npm run demo:browser
+      - run: |
+          mkdir -p .portsmith
+          npm run check 2>&1 | tee .portsmith/ci-check.log
+      - run: npm run demo 2>&1 | tee .portsmith/ci-demo.log
+      - run: npm run demo:browser 2>&1 | tee .portsmith/ci-browser-demo.log
       - run: npm run release:check
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
           name: alpha-evidence-${{ matrix.os }}-node${{ matrix.node }}
+          include-hidden-files: true
+          if-no-files-found: error
           path: |
+            .portsmith/ci-check.log
+            .portsmith/ci-demo.log
+            .portsmith/ci-browser-demo.log
             .portsmith/alpha-release-*/proof.json
             .portsmith/alpha-release-*/audit.json
             .portsmith/alpha-release-*/*.log

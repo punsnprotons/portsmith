@@ -52,6 +52,54 @@ test('browser interaction passes on candidate, fails baseline, preserves reset, 
   await fs.appendFile(path.join(options.out, report.browser.candidate.artifacts[0].path), 'changed');
   await assert.rejects(exportPatch(options.out), /Browser evidence changed/);
 });
+test('evidence capture waits for delayed fonts without extending the frozen interaction deadline', async (t) => {
+  const { options } = await setup(t, async (options) => {
+    const assets = path.join(project, 'node_modules/playwright-core/lib/vite/traceViewer');
+    const font = (await fs.readdir(assets)).find(
+      (name) => name.startsWith('codicon.') && name.endsWith('.ttf')
+    );
+    assert(font, 'Pinned Playwright distribution must contain its test font');
+    await fs.copyFile(path.join(assets, font), path.join(options.target, 'slow.ttf'));
+    const page = path.join(options.target, 'index.html');
+    await fs.writeFile(
+      page,
+      (await fs.readFile(page, 'utf8')).replace(
+        '</script>',
+        `
+input.addEventListener('input', () => {
+  const font = new FontFace('delayed', 'url(/slow.ttf)');
+  document.fonts.add(font);
+  font.load().catch(() => {});
+});
+</script>`
+      )
+    );
+    await fs.writeFile(
+      path.join(options.target, 'server.mjs'),
+      `
+import http from 'node:http'; import fs from 'node:fs/promises'; import path from 'node:path';
+http.createServer(async (req, res) => {
+  const name = new URL(req.url, 'http://localhost').pathname.slice(1) || 'index.html';
+  try {
+    const body = await fs.readFile(path.resolve(name));
+    if (name === 'slow.ttf') await new Promise(resolve => setTimeout(resolve, 900));
+    res.setHeader('content-type', name.endsWith('.html') ? 'text/html' : name.endsWith('.ttf') ? 'font/ttf' : 'text/javascript');
+    res.end(body);
+  } catch { res.writeHead(404); res.end(); }
+}).listen(Number(process.argv[2]), '127.0.0.1');
+`
+    );
+    const contract = await readJson(options.contract);
+    contract.browser.server = { command: process.execPath, args: ['server.mjs', '{port}'] };
+    assert.equal(contract.browser.actionTimeoutMs, 300);
+    await saveJson(options.contract, contract);
+  });
+  const report = await verify(options.out, { allowExecution: true, timeoutMs: 30000 });
+  assert.equal(report.status, 'verified-for-contract', JSON.stringify(report.browser));
+  assert.equal((await readJson(path.join(options.out, 'contract.json'))).browser.actionTimeoutMs, 300);
+  assert.equal(report.browser.candidate.artifacts.length, 6);
+  assert.equal((await exportPatch(options.out)).status, 'patch-ready');
+});
 test('passing Node behavior cannot hide broken browser event wiring or page runtime errors', async (t) => {
   const { options } = await setup(t);
   const file = path.join(options.out, 'candidate/index.html');

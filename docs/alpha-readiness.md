@@ -2,7 +2,7 @@
 
 **Public source alpha: `portsmith-workbench@0.6.0-alpha.1`. npm remains unpublished.** The transfer engine is ready for scoped alpha evaluation, with the documented limitations below. Repository identity and private reporting are configured. Check hosted CI for the exact pushed revision.
 
-## Validated candidate
+## Local release-preparation evidence
 
 | Check | macOS ARM64 / Node 22.19.0 | Linux ARM64 / Node 24.11.1 |
 | --- | --- | --- |
@@ -26,6 +26,7 @@ The Linux run used only an allowlisted source archive in a disposable Debian con
 - Setup, current limitations, benchmark indexing, alpha changelog and declared dependency licenses are documented. Private paths were removed from public benchmark reports.
 - Release preparation checks private/generated paths and credential patterns, compares installed bytes, audits actual consumer dependencies and strips macOS extended attributes from source archives. A separate scan found no configured local .env values in the release inventory; that is not a universal secret/security audit.
 - The release checker now creates temporary installations outside the checkout and rejects ancestor node_modules directories. Its final proof records this isolation; logs and tarballs stay under `.portsmith/alpha-release-*`. This also prevents existing project dependencies from masking missing declarations.
+- The first hosted matrix exposed a macOS screenshot timeout after successful behavior assertions. Screenshot capture now has its own bounded budget, with a delayed-font regression; frozen interaction deadlines remain unchanged. CI retains test/demo logs and release proofs from the hidden evidence directory.
 
 Earlier failed Linux/browser and sandbox-restricted Node runs are retained locally; they are not counted as successful validation. All contract and regression assertions remain intact.
 

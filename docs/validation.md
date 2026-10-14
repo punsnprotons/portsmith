@@ -4,7 +4,7 @@ Portsmith is a local feature-transfer prototype. These results establish behavio
 
 ## Evidence index
 
-The alpha engine passed **149 tests**, zero failures/skips, on macOS ARM64 / Node 22.19.0 and Linux ARM64 / Node 24.11.1. See [alpha readiness](alpha-readiness.md) for clean-install evidence and remaining launch prerequisites. Historical counts below belong to their recorded milestones, not the current test total.
+The local release-preparation engine passed **149 tests**, zero failures/skips, on macOS ARM64 / Node 22.19.0 and Linux ARM64 / Node 24.11.1. See [alpha readiness](alpha-readiness.md) for clean-install evidence and [hosted CI](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml) for the exact pushed revision and current test count. Historical counts below belong to their recorded milestones, not the current test total.
 
 | Evidence | Report |
 | --- | --- |
