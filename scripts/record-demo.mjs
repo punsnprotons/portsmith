@@ -97,7 +97,10 @@ try {
     '+faststart',
     path.join(root, 'transfer-demo.mp4')
   ]);
+  // Start the GIF after the typing prelude so its paused frame shows the behavior gap.
   encode([
+    '-ss',
+    '5',
     '-i',
     webm,
     '-vf',
