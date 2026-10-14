@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and setup help
+    url: https://github.com/punsnprotons/portsmith/discussions
+    about: Ask about setup, contracts or a possible transfer.
+  - name: Private security report
+    url: https://github.com/punsnprotons/portsmith/security/advisories/new
+    about: Report vulnerabilities privately; never include secrets in a public issue.

@@ -21,6 +21,7 @@ export const sourceEntries = [
   'package-lock.json',
   'portsmith.model.json',
   'scripts',
+  'skills',
   'src',
   'test'
 ];

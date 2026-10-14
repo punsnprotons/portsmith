@@ -1,6 +1,8 @@
 # Setup and feature discovery
 
-Use Node 22.19+ or 24.11+ and Git. Install the alpha globally:
+New here? [Try the guided first transfer](first-transfer.md), [connect a coding agent](agents.md), or continue below for installation and model setup.
+
+Use Node 22.19+ (22.x) or 24.11+ and Git. Install the alpha globally:
 
 ```sh
 npm install -g portsmith-workbench@alpha
@@ -68,7 +70,7 @@ The MCP executable is `portsmith-mcp --root /absolute/workspace`; see the [READM
 
 ## Troubleshooting
 
-- **Unsupported Node or TypeScript errors:** use Node 22.19+ or 24.11+; repo-specific build requirements can be stricter.
+- **Unsupported Node or TypeScript errors:** use Node 22.19+ (22.x) or 24.11+; repo-specific build requirements can be stricter.
 - **Missing Chromium executable:** run the install command above under the same account and `PLAYWRIGHT_BROWSERS_PATH` as the demo. Verification resolves that executable in the caller and passes its path to the stripped-environment runner; it does not fall back to another account's cached browser.
 - **Missing Linux shared libraries:** run `npx playwright install --with-deps chromium` from the checkout before retrying.
 - **No model key:** load the private `.env` with `portsmith --env FILE`; the authored demos never require it.

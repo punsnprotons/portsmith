@@ -31,8 +31,8 @@ The CI matrix is configured for Node 22/24 on Ubuntu/macOS. It runs tests, brows
 - Review the source archive and prepared local commit, then run the hosted matrix. No remote, push, tag or release is created by the preparation scripts.
 - Review the scoped alpha limitations and documented legacy test-dependency exceptions.
 - After successful clean checks and hosted CI, publish the exact reviewed tarball with `npm publish /absolute/path/portsmith-workbench-0.6.0-alpha.2.tgz --tag alpha --access public --ignore-scripts --registry=https://registry.npmjs.org/`. Authenticate locally with `npm login`; never put npm tokens in this repository.
-- Run `npm run release:published` afterward. It installs the exact version anonymously from npm with fresh caches, compares the registry integrity and installed bytes to the reviewed package, and tests CLI/API, discovery, initialization, MCP, demos, npx and a temporary global prefix. It never publishes. A failed post-publication check remains a failure; fixes need a new version.
-- `npm install -g portsmith-workbench@alpha` and `npx --yes --package=portsmith-workbench@alpha portsmith-demo` select the alpha explicitly. The prerelease is not promoted to `latest`.
+- Run `npm run release:published` afterward from the exact published source commit (alpha.2: `c2ebfae6c1db3a26022e0efe80fe8d22428bd6f2`). Subsequent source or README changes intentionally fail the byte comparison until a new version is published. It installs the exact version anonymously from npm with fresh caches, compares the registry integrity and installed bytes to the reviewed package, and tests CLI/API, discovery, initialization, MCP, demos, npx and a temporary global prefix. It never publishes. A failed post-publication check remains a failure; fixes need a new version.
+- `npm install -g portsmith-workbench@alpha` and `npx --yes --package=portsmith-workbench@alpha portsmith-demo` select the alpha explicitly. As of 2026-10-14, npm also assigns `latest` to `0.6.0-alpha.2`; two authenticated removal attempts returned HTTP 400. Use the explicit `@alpha` tag and do not describe this as a stable release.
 
 ## Historical benchmark reproduction
 

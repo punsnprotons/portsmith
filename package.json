@@ -1,7 +1,7 @@
 {
   "name": "portsmith-workbench",
   "version": "0.6.0-alpha.2",
-  "description": "Stage a repository feature in another app and verify a declared behavior contract.",
+  "description": "Move JavaScript and TypeScript features between repositories with behavior checks and reviewable patches.",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -28,7 +28,8 @@
     "THIRD_PARTY_NOTICES.md",
     "portsmith.model.json",
     ".env.example",
-    "scripts/run-demo.mjs"
+    "scripts/run-demo.mjs",
+    "skills"
   ],
   "engines": {
     "node": "^22.19.0 || >=24.11.0"
@@ -54,7 +55,9 @@
     "release:check": "node scripts/release-check.mjs",
     "release:clean": "node scripts/release-check.mjs --clean",
     "audit:release": "node scripts/audit-dependencies.mjs",
-    "release:published": "node scripts/release-check.mjs --clean --published"
+    "release:published": "node scripts/release-check.mjs --clean --published",
+    "demo:prepare": "node scripts/create-example.mjs",
+    "demo:record": "node scripts/record-demo.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.1",
@@ -70,9 +73,17 @@
   },
   "keywords": [
     "feature-transfer",
+    "code-reuse",
+    "code-migration",
     "verification",
     "mcp",
-    "developer-tools"
+    "model-context-protocol",
+    "ai-agents",
+    "developer-tools",
+    "cli",
+    "typescript",
+    "javascript",
+    "software-testing"
   ],
   "repository": {
     "type": "git",

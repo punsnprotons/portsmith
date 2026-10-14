@@ -1,0 +1,42 @@
+{
+  "adaptation": "included authored proposal; no model",
+  "scope": "source checkout catalog fixture; not a benchmark of arbitrary applications",
+  "verifiedAt": "2026-10-14T10:00:49.084Z",
+  "status": "verified-for-contract",
+  "source": "5/5",
+  "baseline": "1/5",
+  "candidate": "5/5",
+  "regression": {
+    "baseline": {
+      "version": 1,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "complete": true
+    },
+    "candidate": {
+      "version": 1,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "complete": true
+    }
+  },
+  "browser": "passed",
+  "patchReplay": "patch-ready",
+  "patchSha256": "b72fc85ba69e1e0fdd50ec7607f28da4494f1b841503a11448421e7ed91af311",
+  "contractSha256": "abfc3ca12f310507c936eb57a52fd72608441c3cafc484b51690b51b5a247b01",
+  "recordingAssertions": [
+    "before TEA: 3 products",
+    "after TEA: Tea leaves",
+    "after cafe: Café beans",
+    "reset: 3 products and empty query",
+    "no page errors"
+  ],
+  "media": {
+    "transfer-demo.gif": "618a1e1f34e83342fc27812b8231ab225c45f87c03637c4fccb6cb7c03f05b09",
+    "transfer-demo.png": "fbf5a7be96e1b2f00e412c362a170eb69f5db440b1ef6fd0c7f8e6f218344514"
+  }
+}

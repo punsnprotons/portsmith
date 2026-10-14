@@ -1,0 +1,29 @@
+name: Transfer report
+description: Share a successful transfer or a useful failure.
+title: "[Transfer]: "
+body:
+  - type: input
+    id: feature
+    attributes:
+      label: What feature were you transferring?
+    validations:
+      required: true
+  - type: textarea
+    id: repositories
+    attributes:
+      label: Source and destination
+      description: Public links and pinned revisions, or a minimal reproduction if the repositories are private.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What passed, failed or remained untested?
+      description: Separate discovery, integration, function tests and browser behavior. Include the Portsmith version.
+    validations:
+      required: true
+  - type: textarea
+    id: effort
+    attributes:
+      label: What did you have to do manually?
+      description: Tell us where setup, dependencies or the workflow became confusing. Please remove credentials and private code.

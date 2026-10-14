@@ -1,131 +1,121 @@
 # Portsmith
 
+**Move JS/TS features between repos—with behavior checks and a reviewable patch.**
+
 [![Tests](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml/badge.svg)](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml)
+[![npm alpha](https://img.shields.io/npm/v/portsmith-workbench/alpha?label=npm%20alpha&color=2864d7)](https://www.npmjs.com/package/portsmith-workbench)
+[![MIT license](https://img.shields.io/badge/license-MIT-526775)](LICENSE)
 
-**Move a feature into another app. Review the patch and the checks behind it.**
+[Quick start](#try-it-now) · [First transfer](docs/first-transfer.md) · [Coding agents](docs/agents.md) · [Examples](docs/showcases.md) · [Discussions](https://github.com/punsnprotons/portsmith/discussions)
 
-Portsmith is a local CLI, MCP server and typed JavaScript API for JavaScript/TypeScript feature transfers. It copies the source feature into a destination snapshot, accepts developer or model integration edits, and verifies a frozen behavior contract before exporting a patch. Original repositories stay unchanged.
+Found a useful feature in another codebase? Portsmith traces its JS/TS files, stages them in a copy of your app, and checks the integration against behavior you declare. Use your own edits, a coding agent, or an OpenAI-compatible model. Your original repositories stay unchanged.
 
-**Public alpha · `0.6.0-alpha.2`.** This is scoped verification, not a guarantee for arbitrary apps or demonstrated parity with Rea.
+![A recorded browser session: catalog search fails before the transfer and works afterward, with the declared checks passing.](docs/assets/transfer-demo.gif)
 
-## Install and try it
+*Recorded from the source demo using an included authored proposal, not autonomous AI. The published alpha has the same example behavior with simpler browser styling. [Demo details and reproduction](docs/demo.md) · [Still image](docs/assets/transfer-demo.png)*
 
-Use Node **22.19+ or 24.11+** and Git:
+## Try it now
 
-```sh
-npm install -g portsmith-workbench@alpha
-portsmith doctor --human
-portsmith-demo
-```
-
-No API key or browser is needed. The included authored proposal transfers table filtering into a catalog app: source **5/5**, destination **1/5 → 5/5**, existing regressions pass, and the exported patch reproduces the verified candidate. Output goes into a new `.portsmith/demo-*` directory in your current folder.
-
-Try without a global install:
+Node **22.19+ (22.x) or 24.11+**, plus Git. No API key or signup needed:
 
 ```sh
 npx --yes --package=portsmith-workbench@alpha portsmith-demo
 ```
 
-For Chromium interaction checks, download the matching browser and run the demo:
+The included example moves table filtering into a catalog app:
+
+```text
+Source contract       5/5 passed
+Destination before    1/5 passed
+Destination after     5/5 passed
+Existing tests        pass before and after
+Output                a patch + verification report
+```
+
+It creates a fresh `.portsmith/demo-*` folder in your current directory and prints the patch and report paths. The proposal is authored so you can try the workflow without a model.
+
+For ongoing use:
 
 ```sh
+npm install -g portsmith-workbench@alpha
+portsmith doctor --human
 portsmith-demo --install-browser
-# Later runs can reuse the download:
-portsmith-demo --browser
 ```
 
-On a minimal Linux host, install browser OS dependencies with `npx playwright@1.61.1 install-deps chromium`. This may require administrator privileges. [Project installation, model setup and troubleshooting](docs/setup.md).
+The last command downloads matching Chromium and runs browser interaction checks. Later use `portsmith-demo --browser`. Minimal Linux hosts may also need `npx playwright@1.61.1 install-deps chromium`. [Installation and troubleshooting →](docs/setup.md)
 
-## Transfer a feature
+## What can I use it for?
 
-Discover an entry point, then inspect its code and dependencies:
+- **Reuse a focused feature:** move a filter, parser or transformation into another JS/TS app.
+- **Review an agent's integration:** test the proposed behavior, retain existing tests, then inspect the patch.
+- **Check a browser workflow:** declare interactions such as search and reset, and retain screenshots and traces.
+
+Start with a small feature whose inputs, outputs and destination tests you can name. [Walk through a complete transfer →](docs/first-transfer.md)
+
+## How it works
+
+```text
+Discover → Inspect → Declare behavior → Prepare a copy
+                                             ↓
+Review patch ← Export ← Verify ← Adapt the integration
+```
+
+Export requires a passing source, a demonstrated destination gap, a passing candidate, completed regressions, unchanged originals and a fresh patch that reproduces the verified candidate. A failure, timeout or skipped test blocks verification. [Full verification rules →](docs/workflow.md)
+
+## Bring your coding agent
+
+Portsmith includes a **CLI, MCP server and typed JavaScript API**. Connect an MCP host such as Claude Code or Cursor, then ask:
+
+> Use Portsmith to find the search feature in `/work/source` and plan a transfer into `/work/app`. Show me the behavior contract and dependencies before executing code. Preserve existing tests and export a patch I can review.
+
+[Copyable MCP configurations](docs/agents.md) · [Agent workflow skill](skills/portsmith/SKILL.md) · [API reference](docs/api.md)
+
+For Portsmith's own model-driven adaptation:
 
 ```sh
-portsmith discover --source /work/source --query "search" --human
-portsmith inspect --source /work/source --entry src/filter.mjs --human
-portsmith plan --source /work/source --target /work/app --entry src/filter.mjs --human
+portsmith init --out ./portsmith-setup --model YOUR_MODEL_ID
+# Copy portsmith-setup/.env.example to .env in that directory; add your key locally.
 ```
 
-Write a [behavior contract](docs/workflow.md) that names the source/destination functions, expected cases and unchanged regression tests. Prepare a fresh run and supply an integration proposal:
+Then follow the [model setup guide](docs/autonomous.md). Your key stays in the environment; model use sends selected code to your configured provider. The no-key demo above does not exercise autonomous adaptation.
 
-```sh
-portsmith prepare --source /work/source --target /work/app \
-  --entry src/filter.mjs --mount src/features/filter \
-  --contract /work/contract.json --out /work/transfer-001
-portsmith adapt --run /work/transfer-001 --proposal /work/proposal.json
-portsmith verify --run /work/transfer-001 --allow-execution
-portsmith report --run /work/transfer-001 --human
-portsmith export --run /work/transfer-001
-```
+## Scope of this alpha
 
-Use trusted repositories: verification executes code on your computer, **not in a security sandbox**. Review the patch before applying it yourself. The run directory must be new, outside both repositories, with an existing parent.
-
-## Let your model adapt it
-
-Use an OpenAI-compatible endpoint and a model available to your account:
-
-```sh
-portsmith init --out /work/portsmith-setup --model YOUR_MODEL_ID
-# Copy that directory's .env.example to .env and add your key locally.
-portsmith --env /work/portsmith-setup/.env doctor \
-  --config /work/portsmith-setup/portsmith.model.json --browser --human
-portsmith --env /work/portsmith-setup/.env auto-adapt \
-  --run /work/transfer-001 --config /work/portsmith-setup/portsmith.model.json \
-  --allow-model --allow-execution --human
-```
-
-The model proposes destination edits and repairs failures within a bounded attempt limit. Frozen tests, contracts and copied feature files cannot change. `--allow-model` sends selected code to your configured provider. Keep credentials in `.env`. [Model setup and limits](docs/autonomous.md).
-
-## Supported scope
-
-| Capability | Alpha scope |
+| Works within declared scope | Limits to know |
 | --- | --- |
-| Discovery | Lexical JS/TS ranking, export locations and literal import tracing |
-| Dependencies | Explicit npm/pnpm setup in fresh copies, including workspaces; scripts disabled |
-| Aliases | Local config, static Vite/SvelteKit mappings and explicitly captured Vite/plugin resolutions |
-| New packages | Proposal import discovery and reviewed donor declarations before freezing |
-| Verification | Node-callable contracts; Node tests and Vitest 0.34/4.1; declared build/type checks |
-| Browser | Chromium interactions, regressions, screenshots and traces |
-| Delivery | Hash-bound evidence, freshness checks and independently applied patch |
+| JS/TS file tracing and feature discovery | Lexical leads, not runtime proof or function slicing |
+| npm/pnpm setup in fresh copies, including workspaces | Scripts disabled; unknown versions need reviewed declarations |
+| Static aliases and explicit Vite/plugin resolution captures | Computed imports and arbitrary bundler assets are unsupported |
+| Function contracts, Node/Vitest regressions, declared builds | Only completed declared checks count |
+| Chromium interactions, screenshots and traces | No general cross-framework conversion or production guarantee |
 
-[Automatic dependency setup](docs/automatic-setup.md) · [Alias and virtual-module limits](docs/dependencies-aliases.md) · [Browser contracts](docs/browser.md).
+**Public alpha: `0.6.0-alpha.2`.** Review every patch. Verification executes repository code on your machine; it is **not a security sandbox**. Use trusted code and review source licenses. A pass proves the declared cases, not general equivalence. [Dependency details](docs/dependencies-aliases.md) · [Security](SECURITY.md)
 
-Computed imports, general cross-framework conversion and arbitrary bundler assets remain unsupported. Unknown dependency versions require reviewed declarations. Adding imports after freezing requires new setup and a new run. Installed dependency bytes are not fully attested. A passing result proves only the declared cases and completed tests.
+## Examples and evidence
 
-## Connect a coding agent
+Historical controlled transfers include IT-Tools, TodoMVC, drawDB and Mermaid Live Editor. They have authored boundaries and recorded limitations; they are not a general success rate or proof of parity with Rea. [Browse the cases →](docs/showcases.md)
 
-Configure your MCP host, replacing the workspace path:
+[Rea](https://github.com/morluto/rea) is an optional analysis evidence adapter. Its findings stay separate from Portsmith's behavior checks. [Adapter and comparison scope](docs/rea.md).
 
-```json
-{
-  "mcpServers": {
-    "portsmith": {
-      "command": "npx",
-      "args": ["--yes", "--package=portsmith-workbench@0.6.0-alpha.2", "portsmith-mcp", "--root", "/absolute/workspace"]
-    }
-  }
-}
-```
+## Documentation and contributing
 
-There are 15 default tools and 21 with server `--allow-execution`. Execution calls also need `allowExecution: true`; model calls additionally need `allowModel: true` and a key in the server environment. All tool paths must be within the configured root. This path policy does not sandbox executed code. The `transfer_feature` prompt guides discovery through export.
-
-## Evidence and development
-
-Real transfers include IT-Tools, TodoMVC, drawDB and Mermaid Live Editor. The most recent [jsondiffpatch → drawDB trial](docs/benchmark-packages.md) passed frozen contracts, unchanged regressions, builds, independent patch replay and browser save/reload checks in both Portsmith and Rea-assisted arms. These are controlled trials with authored boundaries, **not a standalone Rea-agent comparison or a general success rate**.
-
-The optional [Rea adapter](docs/rea.md) retains upstream analysis evidence separately from Portsmith's behavior checks. [Validation and benchmark index](docs/validation.md) · [Research history](docs/research.md).
-
-To develop from source:
+| I want to… | Start here |
+| --- | --- |
+| Install or diagnose setup | [Setup](docs/setup.md) |
+| Understand every step | [First transfer](docs/first-transfer.md) |
+| Use an agent or a model | [MCP / agent setup](docs/agents.md) · [Autonomous adaptation](docs/autonomous.md) |
+| Transfer a larger app | [Dependency setup](docs/automatic-setup.md) · [Aliases](docs/dependencies-aliases.md) |
+| Declare browser checks | [Browser contracts](docs/browser.md) |
+| Find commands or API types | [CLI reference](docs/commands.md) · [API](docs/api.md) |
+| Contribute or report a problem | [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/punsnprotons/portsmith/issues/new/choose) |
 
 ```sh
 git clone https://github.com/punsnprotons/portsmith.git
 cd portsmith
 npm ci --ignore-scripts
 npm run browser:install
-npm run check          # Types, engine tests, generated command reference
-npm run release:clean # Clean install, browser, package consumer and audit checks
+npm run check
+npm run demo
 ```
 
-Release checks require network access, execute included test fixtures, use fresh caches and never publish. [Alpha readiness](docs/alpha-readiness.md) · [Release checklist](docs/release.md) · [Security and legacy test dependencies](SECURITY.md).
-
-[Command reference](docs/commands.md) · [Public API](docs/api.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md).
+[Architecture](docs/architecture.md) · [Validation](docs/validation.md) · [Release checks](docs/release.md) · [MIT license](LICENSE)

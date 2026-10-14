@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a reproducible problem with setup, transfer or verification.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for testing the alpha. Remove keys, private code and local paths before sharing logs. Report security issues privately using SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Portsmith version, Node version and operating system
+      placeholder: "0.6.0-alpha.2 / Node 24.11 / macOS"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the command, a minimal public example and any relevant revision.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized output
+      description: Include the failing status and completed or unrun checks. Do not upload an entire run directory.
+      render: text
