@@ -1,16 +1,20 @@
 # Portsmith
 
+[![Tests](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml/badge.svg)](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml)
+
 **Move a feature into another app. Review the patch and the checks behind it.**
 
 Portsmith is a local CLI, MCP server and typed JavaScript API for JavaScript/TypeScript feature transfers. It copies the source feature into a destination snapshot, accepts developer or model integration edits, and verifies a frozen behavior contract before exporting a patch. Original repositories stay unchanged.
 
-**Alpha candidate · `0.6.0-alpha.1` · unpublished.** This is scoped verification, not a guarantee for arbitrary apps or demonstrated parity with Rea. npm publishing remains disabled.
+**Public alpha · `0.6.0-alpha.1` · source distribution.** This is scoped verification, not a guarantee for arbitrary apps or demonstrated parity with Rea. npm publishing remains disabled.
 
 ## Try it locally
 
 Use Node **22.19+ or 24.11+** and Git. From the source directory:
 
 ```sh
+git clone https://github.com/punsnprotons/portsmith.git
+cd portsmith
 npm ci --ignore-scripts
 npm run demo
 ```

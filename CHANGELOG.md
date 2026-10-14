@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0-alpha.1 — unpublished candidate
+## 0.6.0-alpha.1 — public source alpha
 
 - JavaScript/TypeScript discovery, CLI/MCP/API transfer workflows and frozen behavior verification.
 - Bounded model adaptation, Chromium contracts and reviewable, replay-checked patches.
@@ -10,4 +10,4 @@
 - Fixed browser verification to honor the configured Chromium cache in clean environments without inheriting credentials.
 - Updated YAML to 2.9.1; retained and documented development-only legacy Vitest compatibility fixtures.
 
-This alpha does not claim broad reliability parity with Rea. Benchmark reports retain their original dependency versions and measured scope. Nothing has been published.
+This alpha does not claim broad reliability parity with Rea. Benchmark reports retain their original dependency versions and measured scope. Source is available on GitHub; no npm package or GitHub release is published.

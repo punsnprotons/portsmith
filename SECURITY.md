@@ -1,6 +1,6 @@
 # Security and execution scope
 
-Portsmith is an unpublished alpha candidate. Analyze and execute only repositories you trust. Execution flags authorize host processes; neither copied directories nor the MCP workspace root are a sandbox. Source code can access the host and network. Run untrusted experiments in an independently isolated environment.
+Portsmith is a public source alpha; the npm package remains unpublished. Analyze and execute only repositories you trust. Execution flags authorize host processes; neither copied directories nor the MCP workspace root are a sandbox. Source code can access the host and network. Run untrusted experiments in an independently isolated environment.
 
 Model adaptation sends selected code to the configured provider. Review that code for secrets first. Use private `.env` files for keys. Snapshot exclusions and release credential-pattern checks reduce accidental inclusion; they are not comprehensive secret detection. Never post keys, private code or unredacted run artifacts in a public issue.
 
@@ -14,4 +14,4 @@ These legacy packages execute only authored compatibility tests with explicit fi
 
 ## Reporting
 
-A hosted repository and private reporting channel have not been configured yet. Before publication, the owner must enable GitHub private vulnerability reporting and add its verified link here. Do not invent a contact address or publish sensitive reproduction material in public issues.
+Report vulnerabilities through [GitHub private vulnerability reporting](https://github.com/punsnprotons/portsmith/security/advisories/new). This channel is enabled for the repository. Include the affected version, a minimal reproduction and expected impact; omit credentials and private repository contents. Use [public issues](https://github.com/punsnprotons/portsmith/issues) only for non-sensitive bugs and feature requests.

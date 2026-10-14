@@ -1,6 +1,6 @@
 # Alpha readiness — 2026-10-14
 
-**Local candidate: `portsmith-workbench@0.6.0-alpha.1`. Nothing published.** The transfer engine is ready for scoped alpha evaluation, with the documented limitations below. Repository identity, private reporting and hosted CI remain launch prerequisites.
+**Public source alpha: `portsmith-workbench@0.6.0-alpha.1`. npm remains unpublished.** The transfer engine is ready for scoped alpha evaluation, with the documented limitations below. Repository identity and private reporting are configured. Check hosted CI for the exact pushed revision.
 
 ## Validated candidate
 
@@ -43,11 +43,10 @@ Recorded full runs for the table above:
 
 These are private local evidence references, not public downloads. Later packaging/documentation passes get new proof directories; compare their source inventory before distributing any archive.
 
-## Still required at publication time
+## Public source and package status
 
-1. Choose the actual GitHub owner/repository and confirm package-name availability. Add verified repository/bugs/homepage metadata to the prepared local commit.
-2. Enable private vulnerability reporting and supply its real link in SECURITY.md.
-3. Run the configured hosted Linux/macOS, Node 22/24 matrix against that commit.
-4. Obtain explicit publication authorization. Keep `private: true` until an npm release is specifically approved.
+- Source repository: [punsnprotons/portsmith](https://github.com/punsnprotons/portsmith). Repository/support metadata are configured and private vulnerability reporting is enabled.
+- Hosted checks: [Node 22/24 on Ubuntu/macOS](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml). Inspect the exact commit and all four matrix jobs; local results above are separate evidence.
+- No npm package or GitHub release is published. `private: true` stays in place. An npm release requires a fresh name-availability check and explicit authorization.
 
 This is an alpha with trusted host execution, bounded JS/TS support, Chromium-only browser checks and authored behavior contracts. It does not claim production readiness, a broad autonomous success rate, uniqueness or Rea parity.

@@ -116,7 +116,7 @@ The first Node 24 matrix attempt overlapped an npm operation replacing local run
 - Computed imports, general cross-framework conversion and arbitrary bundler assets are unsupported. New packages require reviewed declarations before a new run is frozen.
 - Setup receipts bind manifests and locks, but installed dependency bytes and excluded generated files are not fully attested. Results concern the staged environment and selected checks.
 - Trusted repository code runs on the host. File hashes detect drift, not malicious rewriting of the whole evidence directory.
-- Hosted GitHub CI remains unrun. See [alpha release preparation](release.md) for the repeatable clean-install gates and publication-only owner actions.
+- Hosted GitHub results are available in [workflow runs](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml). Check the exact commit and all four jobs; local results are not a substitute. See [release preparation](release.md) for repeatable installation gates.
 
 See [Rea integration status](rea.md) for the separate live-provider result. No success from the protocol test double is presented as real Rea analysis.
 

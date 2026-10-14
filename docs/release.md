@@ -1,6 +1,6 @@
 # Alpha release preparation
 
-The prepared identity is **Portsmith / `portsmith-workbench` / `0.6.0-alpha.1`**. This is a local release candidate, not a reserved registry name or trademark claim. `private: true` intentionally prevents npm publication. There is no publish workflow.
+The prepared identity is **Portsmith / `portsmith-workbench` / `0.6.0-alpha.1`**. Source is hosted at [punsnprotons/portsmith](https://github.com/punsnprotons/portsmith). The npm name is not a registry reservation or trademark claim. `private: true` intentionally prevents npm publication. There is no publish workflow.
 
 The [readiness report](alpha-readiness.md) separates completed local checks from hosted CI and publication prerequisites.
 
@@ -22,12 +22,12 @@ On Linux install Chromium's OS dependencies first (`npx playwright install --wit
 
 `release:check` performs packaging, consumer installation and advisory checks without the full source suite or browser checks. It is not a substitute for `release:clean`. A failed/incomplete step never produces a passed proof. Both commands access the npm registry. All generated artifacts remain private under `.portsmith`.
 
-The CI matrix is configured for Node 22/24 on Ubuntu/macOS. It runs tests, browser demos, audits and package consumer checks, and uploads local evidence with `actions/upload-artifact`; it never publishes a GitHub release or npm package. Hosted CI is still unrun until an authorized repository remote exists. Local Linux container results must be labeled separately from hosted CI.
+The CI matrix is configured for Node 22/24 on Ubuntu/macOS. It runs tests, browser demos, audits and package consumer checks, and uploads local evidence with `actions/upload-artifact`; it never publishes a GitHub release or npm package. Check the [hosted workflow runs](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml) for the exact commit being evaluated; a configured workflow alone is not passing CI evidence. Local Linux container results must be labeled separately from hosted CI.
 
-## Before the owner authorizes publication
+## Source publication and future package release
 
-- Select the GitHub account/repository URL and confirm the intended package name is available. Add verified `repository`, `bugs` and `homepage` metadata; do not use guessed URLs.
-- Enable private vulnerability reporting and replace the reporting placeholder in `SECURITY.md`.
+- Repository, issue and homepage metadata point to `punsnprotons/portsmith`. Confirm npm package-name availability again before any registry release.
+- Private vulnerability reporting is enabled; `SECURITY.md` links to the reporting channel.
 - Review the source archive and prepared local commit, then run the hosted matrix. No remote, push, tag or release is created by the preparation scripts.
 - Review the scoped alpha limitations and documented legacy test-dependency exceptions.
 - Only for an explicitly authorized npm release, remove `private: true` and publish with an alpha tag after rechecking the final package. Nothing here authorizes that action.
