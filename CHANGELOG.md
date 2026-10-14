@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0-alpha.2 — npm alpha
+
+- Publishable package configured for the public npm `alpha` channel.
+- Direct `portsmith-demo` and `portsmith-mcp` executables, with optional matching Chromium installation.
+- Explicit `portsmith --env FILE` loading for model credentials without source paths.
+- Demos write to the current directory, preserving global and npx package installations.
+- Fresh consumer, npx, global-install and MCP checks, plus post-publication registry byte verification.
+
 ## 0.6.0-alpha.1 — public source alpha
 
 - JavaScript/TypeScript discovery, CLI/MCP/API transfer workflows and frozen behavior verification.
@@ -12,4 +20,4 @@
 - Retained CI logs and release evidence across the Node 22/24 Linux/macOS matrix, including hidden-directory artifacts.
 - Updated YAML to 2.9.1; retained and documented development-only legacy Vitest compatibility fixtures.
 
-This alpha does not claim broad reliability parity with Rea. Benchmark reports retain their original dependency versions and measured scope. Source is available on GitHub; no npm package or GitHub release is published.
+This alpha does not claim broad reliability parity with Rea. Benchmark reports retain their original dependency versions and measured scope. Source is available on GitHub. Consult npm for package versions and dist-tags; no GitHub release is created by the checks.

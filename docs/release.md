@@ -1,6 +1,6 @@
 # Alpha release preparation
 
-The prepared identity is **Portsmith / `portsmith-workbench` / `0.6.0-alpha.1`**. Source is hosted at [punsnprotons/portsmith](https://github.com/punsnprotons/portsmith). The npm name is not a registry reservation or trademark claim. `private: true` intentionally prevents npm publication. There is no publish workflow.
+The prepared identity is **Portsmith / `portsmith-workbench` / `0.6.0-alpha.2`**. Source is hosted at [punsnprotons/portsmith](https://github.com/punsnprotons/portsmith). The npm name is not a registry reservation or trademark claim. Publication is explicitly authorized for this alpha. `publishConfig` selects the public npm registry and `alpha` tag. CI does not publish automatically.
 
 The [readiness report](alpha-readiness.md) separates completed local checks from hosted CI and publication prerequisites.
 
@@ -24,13 +24,15 @@ On Linux install Chromium's OS dependencies first (`npx playwright install --wit
 
 The CI matrix is configured for Node 22/24 on Ubuntu/macOS. It runs tests, browser demos, audits and package consumer checks, and uploads local evidence with `actions/upload-artifact`; it never publishes a GitHub release or npm package. Check the [hosted workflow runs](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml) for the exact commit being evaluated; a configured workflow alone is not passing CI evidence. Local Linux container results must be labeled separately from hosted CI.
 
-## Source publication and future package release
+## Publishing the npm alpha
 
 - Repository, issue and homepage metadata point to `punsnprotons/portsmith`. Confirm npm package-name availability again before any registry release.
 - Private vulnerability reporting is enabled; `SECURITY.md` links to the reporting channel.
 - Review the source archive and prepared local commit, then run the hosted matrix. No remote, push, tag or release is created by the preparation scripts.
 - Review the scoped alpha limitations and documented legacy test-dependency exceptions.
-- Only for an explicitly authorized npm release, remove `private: true` and publish with an alpha tag after rechecking the final package. Nothing here authorizes that action.
+- After successful clean checks and hosted CI, publish the exact reviewed tarball with `npm publish /absolute/path/portsmith-workbench-0.6.0-alpha.2.tgz --tag alpha --access public --ignore-scripts --registry=https://registry.npmjs.org/`. Authenticate locally with `npm login`; never put npm tokens in this repository.
+- Run `npm run release:published` afterward. It installs the exact version anonymously from npm with fresh caches, compares the registry integrity and installed bytes to the reviewed package, and tests CLI/API, discovery, initialization, MCP, demos, npx and a temporary global prefix. It never publishes. A failed post-publication check remains a failure; fixes need a new version.
+- `npm install -g portsmith-workbench@alpha` and `npx --yes --package=portsmith-workbench@alpha portsmith-demo` select the alpha explicitly. The prerelease is not promoted to `latest`.
 
 ## Historical benchmark reproduction
 

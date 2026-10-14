@@ -71,8 +71,18 @@ export function createServer({ root, allowExecution = false }) {
 
 export async function main() {
   const { values } = parseArgs({
-    options: { root: { type: 'string' }, 'allow-execution': { type: 'boolean', default: false } }
+    options: {
+      root: { type: 'string' },
+      'allow-execution': { type: 'boolean', default: false },
+      help: { type: 'boolean', short: 'h' }
+    }
   });
+  if (values.help) {
+    console.log(
+      'portsmith-mcp --root /absolute/workspace [--allow-execution]\nStarts the stdio MCP server. Execution is disabled unless explicitly enabled.'
+    );
+    return;
+  }
   if (!values.root) throw new Error('MCP requires --root /absolute/workspace.');
   const root = await rootDir(values.root);
   const server = createServer({ root, allowExecution: values['allow-execution'] });

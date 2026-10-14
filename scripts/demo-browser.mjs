@@ -1,10 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { browserFixture } from './browser-fixture.mjs';
-import { project } from './fixture.mjs';
 import { prepare, adapt, verify, exportPatch } from '../src/index.mjs';
-await fs.mkdir(path.join(project, '.portsmith'), { recursive: true });
-const root = await fs.mkdtemp(path.join(project, '.portsmith', 'browser-demo-'));
+await fs.mkdir(path.join(process.cwd(), '.portsmith'), { recursive: true });
+const root = await fs.mkdtemp(path.join(process.cwd(), '.portsmith', 'browser-demo-'));
 const options = await browserFixture(root);
 await prepare(options);
 await adapt(options.out, path.join(root, 'proposal.json'));

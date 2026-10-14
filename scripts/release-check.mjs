@@ -8,7 +8,9 @@ import { releaseInventory, copyRelease, sha256 } from './release-files.mjs';
 
 const project = fileURLToPath(new URL('../', import.meta.url));
 const clean = process.argv.includes('--clean');
-if (process.argv.slice(2).some((a) => a !== '--clean')) throw Error('Usage: release-check.mjs [--clean]');
+const published = process.argv.includes('--published');
+if (process.argv.slice(2).some((a) => !['--clean', '--published'].includes(a)))
+  throw Error('Usage: release-check.mjs [--clean] [--published]');
 await fs.mkdir(path.join(project, '.portsmith'), { recursive: true });
 const out = await fs.mkdtemp(path.join(project, '.portsmith', 'alpha-release-'));
 const inventory = await releaseInventory(project);
@@ -18,6 +20,7 @@ const proof = {
   node: process.version,
   platform: `${process.platform}-${process.arch}`,
   clean,
+  published,
   files: inventory,
   steps: [],
   status: 'running'
@@ -42,6 +45,7 @@ const env = {
   npm_config_audit: 'false',
   npm_config_fund: 'false'
 };
+env.npm_config_registry = 'https://registry.npmjs.org/';
 if (process.env.PLAYWRIGHT_BROWSERS_PATH) env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH;
 else env.PLAYWRIGHT_BROWSERS_PATH = path.join(work, 'browsers');
 async function run(name, command, args, cwd, extra = {}) {
@@ -94,7 +98,16 @@ try {
   checkout = path.join(work, 'source');
   await copyRelease(project, checkout, inventory);
   const pkg = JSON.parse(await fs.readFile(path.join(checkout, 'package.json')));
-  assert.equal(pkg.private, true, 'Publishing must remain disabled');
+  assert.notEqual(pkg.private, true, 'The authorized npm alpha must be publishable');
+  assert.deepEqual(
+    pkg.publishConfig,
+    {
+      access: 'public',
+      tag: 'alpha',
+      registry: 'https://registry.npmjs.org/'
+    },
+    'Release must target the public npm alpha channel'
+  );
   assert.match(pkg.version, /-alpha\.\d+$/);
   assert.equal(
     JSON.parse(await fs.readFile(path.join(checkout, 'package-lock.json'))).packages[''].version,
@@ -125,7 +138,17 @@ try {
   const consumer = path.join(work, 'consumer');
   await fs.mkdir(consumer);
   await fs.writeFile(path.join(consumer, 'package.json'), '{"private":true,"type":"module"}\n');
-  await run('consumer-install', 'npm', ['install', '--ignore-scripts', '--omit=dev', tarball], consumer);
+  const installSpec = published ? `${pkg.name}@${pkg.version}` : tarball;
+  await run('consumer-install', 'npm', ['install', '--ignore-scripts', '--omit=dev', installSpec], consumer);
+  if (published) {
+    const metadata = JSON.parse(
+      await run('registry-metadata', 'npm', ['view', installSpec, '--json'], consumer)
+    );
+    const pack = JSON.parse(await fs.readFile(path.join(out, 'pack.log'), 'utf8'))[0];
+    assert.equal(metadata.dist.integrity, pack.integrity, 'Registry tarball differs from tested package');
+    assert.equal(metadata['dist-tags'].alpha, pkg.version, 'Alpha tag does not point to this release');
+    proof.registry = { name: pkg.name, version: pkg.version, integrity: metadata.dist.integrity };
+  }
   await run('consumer-audit', 'npm', ['audit', '--omit=dev', '--audit-level=low', '--json'], consumer);
   const installed = path.join(consumer, 'node_modules', pkg.name);
   assert.deepEqual(await releaseInventory(installed, await fs.readdir(installed)), packedFiles);
@@ -159,9 +182,68 @@ try {
     ],
     consumer
   );
-  await run('installed-demo', 'node', [path.join(installed, 'scripts/demo.mjs')], consumer);
-  if (clean)
-    await run('installed-browser-demo', 'node', [path.join(installed, 'scripts/demo-browser.mjs')], consumer);
+  const demo = path.join(consumer, 'node_modules', '.bin', 'portsmith-demo');
+  await run('installed-demo', demo, [], consumer);
+  if (clean) await run('installed-browser-demo', demo, ['--browser'], consumer);
+  await run(
+    'installed-mcp-help',
+    path.join(consumer, 'node_modules', '.bin', 'portsmith-mcp'),
+    ['--help'],
+    consumer
+  );
+  await run(
+    'installed-mcp',
+    'node',
+    [
+      '--input-type=module',
+      '-e',
+      `
+    import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+    import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+    const client = new Client({name:'release-check',version:'1.0.0'});
+    try {
+      await client.connect(new StdioClientTransport({command:process.execPath,args:[${JSON.stringify(path.join(installed, 'src/mcp.mjs'))},'--root',process.cwd()]}));
+      const {tools} = await client.listTools();
+      if(tools.length!==15 || tools.some(t=>t.name==='verify_transfer')) throw Error('Unexpected default MCP tools');
+      const result=await client.callTool({name:'discover_features',arguments:{source:${JSON.stringify(path.join(installed, 'examples/source'))}}});
+      if(result.isError || !result.structuredContent?.candidates.length) throw Error('Installed MCP discovery failed');
+      console.log('MCP handshake, default authorization and feature discovery passed');
+    } finally { await client.close(); }
+  `
+    ],
+    consumer
+  );
+  // Separate directories prevent npm exec from silently finding the consumer's local bin.
+  const standalone = path.join(work, 'standalone');
+  await fs.mkdir(standalone);
+  assert.equal(
+    (
+      await run(
+        'npm-exec',
+        'npm',
+        ['exec', '--yes', `--package=${installSpec}`, '--', 'portsmith', '--version'],
+        standalone
+      )
+    ).trim(),
+    pkg.version
+  );
+  const prefix = path.join(work, 'global');
+  await run(
+    'global-install',
+    'npm',
+    ['install', '--global', '--prefix', prefix, '--ignore-scripts', installSpec],
+    standalone
+  );
+  assert.equal(
+    (await run('global-cli', path.join(prefix, 'bin', 'portsmith'), ['--version'], standalone)).trim(),
+    pkg.version
+  );
+  await run('global-demo', path.join(prefix, 'bin', 'portsmith-demo'), [], standalone);
+  assert.deepEqual(
+    await releaseInventory(installed, await fs.readdir(installed)),
+    packedFiles,
+    'Consumer commands modified the installed package'
+  );
   // Generated evidence/dependencies cannot enter the source archive.
   const sourceList = path.join(out, 'source-files.txt');
   await fs.writeFile(sourceList, Object.keys(inventory).join('\n') + '\n');

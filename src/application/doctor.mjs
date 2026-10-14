@@ -57,7 +57,7 @@ export async function doctor({ workspace = process.cwd(), config, target, browse
           : 'Not loaded into process environment',
         remediation: present
           ? null
-          : 'Add your key to a private .env and start Node with --env-file=.env. Doctor never reads or prints .env.'
+          : 'Add your key to a private .env and run portsmith --env .env doctor. The CLI only loads it when explicitly requested; values are never printed.'
       });
     } catch {
       checks.push({

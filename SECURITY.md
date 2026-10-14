@@ -1,6 +1,6 @@
 # Security and execution scope
 
-Portsmith is a public source alpha; the npm package remains unpublished. Analyze and execute only repositories you trust. Execution flags authorize host processes; neither copied directories nor the MCP workspace root are a sandbox. Source code can access the host and network. Run untrusted experiments in an independently isolated environment.
+Portsmith is a public alpha. Analyze and execute only repositories you trust. Execution flags authorize host processes; neither copied directories nor the MCP workspace root are a sandbox. Source code can access the host and network. Run untrusted experiments in an independently isolated environment.
 
 Model adaptation sends selected code to the configured provider. Review that code for secrets first. Use private `.env` files for keys. Snapshot exclusions and release credential-pattern checks reduce accidental inclusion; they are not comprehensive secret detection. Never post keys, private code or unredacted run artifacts in a public issue.
 

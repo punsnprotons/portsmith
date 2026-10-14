@@ -1,4 +1,5 @@
-import { parseArgs } from 'node:util';
+import { parseArgs, parseEnv } from 'node:util';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { commands } from '../../contracts/commands.mjs';
 import { commandResult, version } from '../../application/service.mjs';
@@ -36,7 +37,7 @@ const help = (command) => {
             `  --${flagName(key)}${booleanFlags.has(key) ? '' : ' VALUE'}${schema.isOptional() ? ' (optional)' : ' (required)'}`
         )
         .join('\n') +
-      '\n\nOutput: --json, --human, --output FILE\n'
+      '\n\nOutput: --json, --human, --output FILE\nEnvironment: --env FILE (explicit local .env; never loaded automatically)\n'
     );
   }
   return (
@@ -44,7 +45,7 @@ const help = (command) => {
     Object.entries(commands)
       .map(([name, def]) => `  ${name.padEnd(14)} ${def.description}`)
       .join('\n') +
-    '\n\nStart: npm run demo\nHelp: portsmith COMMAND --help\nJSON: --json (also the default when stdout is piped)\nSchemas: portsmith schema --command contract\n'
+    '\n\nStart: portsmith-demo (included authored example)\nHelp: portsmith COMMAND --help\nEnvironment: --env FILE\nJSON: --json (also the default when stdout is piped)\nSchemas: portsmith schema --command contract\n'
   );
 };
 
@@ -158,7 +159,8 @@ export async function main(args = process.argv.slice(2)) {
       version: { type: 'boolean' },
       json: { type: 'boolean' },
       human: { type: 'boolean' },
-      output: { type: 'string' }
+      output: { type: 'string' },
+      env: { type: 'string' }
     };
     for (const definition of Object.values(commands))
       for (const key of Object.keys(definition.input.shape))
@@ -191,7 +193,7 @@ export async function main(args = process.argv.slice(2)) {
     const input = {};
     const allowed = new Map(Object.keys(commands[name].input.shape).map((key) => [flagName(key), key]));
     for (const [flag, value] of Object.entries(values)) {
-      if (['json', 'human', 'help', 'version', 'output'].includes(flag)) continue;
+      if (['json', 'human', 'help', 'version', 'output', 'env'].includes(flag)) continue;
       if (!allowed.has(flag))
         throw new PortsmithError(
           'invalid_option',
@@ -200,6 +202,10 @@ export async function main(args = process.argv.slice(2)) {
         );
       const key = allowed.get(flag);
       input[key] = ['timeoutMs', 'maxAttempts', 'limit'].includes(key) ? Number(value) : value;
+    }
+    if (values['env']) {
+      const environment = parseEnv(await fs.readFile(path.resolve(values['env']), 'utf8'));
+      for (const [key, value] of Object.entries(environment)) process.env[key] ??= value;
     }
     const reply = await commandResult(name, input, { allowExecution: values['allow-execution'] === true });
     if (!reply.ok) {

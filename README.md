@@ -6,50 +6,56 @@
 
 Portsmith is a local CLI, MCP server and typed JavaScript API for JavaScript/TypeScript feature transfers. It copies the source feature into a destination snapshot, accepts developer or model integration edits, and verifies a frozen behavior contract before exporting a patch. Original repositories stay unchanged.
 
-**Public alpha · `0.6.0-alpha.1` · source distribution.** This is scoped verification, not a guarantee for arbitrary apps or demonstrated parity with Rea. npm publishing remains disabled.
+**Public alpha · `0.6.0-alpha.2`.** This is scoped verification, not a guarantee for arbitrary apps or demonstrated parity with Rea.
 
-## Try it locally
+## Install and try it
 
-Use Node **22.19+ or 24.11+** and Git. From the source directory:
-
-```sh
-git clone https://github.com/punsnprotons/portsmith.git
-cd portsmith
-npm ci --ignore-scripts
-npm run demo
-```
-
-No API key or browser is needed. The included authored proposal transfers table filtering into a catalog app: source **5/5**, destination **1/5 → 5/5**, existing regressions pass, and the exported patch reproduces the verified candidate. Output goes into a new `.portsmith/demo-*` directory.
-
-For actual Chromium interaction checks, also run:
+Use Node **22.19+ or 24.11+** and Git:
 
 ```sh
-npm run browser:install
-npm run demo:browser
+npm install -g portsmith-workbench@alpha
+portsmith doctor --human
+portsmith-demo
 ```
 
-On a minimal Linux host, install browser OS dependencies with `npx playwright install --with-deps chromium`. This may require administrator privileges. [Installation, local tarballs and troubleshooting](docs/setup.md).
+No API key or browser is needed. The included authored proposal transfers table filtering into a catalog app: source **5/5**, destination **1/5 → 5/5**, existing regressions pass, and the exported patch reproduces the verified candidate. Output goes into a new `.portsmith/demo-*` directory in your current folder.
+
+Try without a global install:
+
+```sh
+npx --yes --package=portsmith-workbench@alpha portsmith-demo
+```
+
+For Chromium interaction checks, download the matching browser and run the demo:
+
+```sh
+portsmith-demo --install-browser
+# Later runs can reuse the download:
+portsmith-demo --browser
+```
+
+On a minimal Linux host, install browser OS dependencies with `npx playwright@1.61.1 install-deps chromium`. This may require administrator privileges. [Project installation, model setup and troubleshooting](docs/setup.md).
 
 ## Transfer a feature
 
 Discover an entry point, then inspect its code and dependencies:
 
 ```sh
-node src/cli.mjs discover --source /work/source --query "search" --human
-node src/cli.mjs inspect --source /work/source --entry src/filter.mjs --human
-node src/cli.mjs plan --source /work/source --target /work/app --entry src/filter.mjs --human
+portsmith discover --source /work/source --query "search" --human
+portsmith inspect --source /work/source --entry src/filter.mjs --human
+portsmith plan --source /work/source --target /work/app --entry src/filter.mjs --human
 ```
 
 Write a [behavior contract](docs/workflow.md) that names the source/destination functions, expected cases and unchanged regression tests. Prepare a fresh run and supply an integration proposal:
 
 ```sh
-node src/cli.mjs prepare --source /work/source --target /work/app \
+portsmith prepare --source /work/source --target /work/app \
   --entry src/filter.mjs --mount src/features/filter \
   --contract /work/contract.json --out /work/transfer-001
-node src/cli.mjs adapt --run /work/transfer-001 --proposal /work/proposal.json
-node src/cli.mjs verify --run /work/transfer-001 --allow-execution
-node src/cli.mjs report --run /work/transfer-001 --human
-node src/cli.mjs export --run /work/transfer-001
+portsmith adapt --run /work/transfer-001 --proposal /work/proposal.json
+portsmith verify --run /work/transfer-001 --allow-execution
+portsmith report --run /work/transfer-001 --human
+portsmith export --run /work/transfer-001
 ```
 
 Use trusted repositories: verification executes code on your computer, **not in a security sandbox**. Review the patch before applying it yourself. The run directory must be new, outside both repositories, with an existing parent.
@@ -59,11 +65,11 @@ Use trusted repositories: verification executes code on your computer, **not in 
 Use an OpenAI-compatible endpoint and a model available to your account:
 
 ```sh
-node src/cli.mjs init --out /work/portsmith-setup --model YOUR_MODEL_ID
+portsmith init --out /work/portsmith-setup --model YOUR_MODEL_ID
 # Copy that directory's .env.example to .env and add your key locally.
-node --env-file=/work/portsmith-setup/.env src/cli.mjs doctor \
+portsmith --env /work/portsmith-setup/.env doctor \
   --config /work/portsmith-setup/portsmith.model.json --browser --human
-node --env-file=/work/portsmith-setup/.env src/cli.mjs auto-adapt \
+portsmith --env /work/portsmith-setup/.env auto-adapt \
   --run /work/transfer-001 --config /work/portsmith-setup/portsmith.model.json \
   --allow-model --allow-execution --human
 ```
@@ -88,14 +94,14 @@ Computed imports, general cross-framework conversion and arbitrary bundler asset
 
 ## Connect a coding agent
 
-Configure your MCP host, replacing both absolute paths:
+Configure your MCP host, replacing the workspace path:
 
 ```json
 {
   "mcpServers": {
     "portsmith": {
-      "command": "node",
-      "args": ["/absolute/path/to/portsmith/src/mcp.mjs", "--root", "/absolute/workspace"]
+      "command": "npx",
+      "args": ["--yes", "--package=portsmith-workbench@0.6.0-alpha.2", "portsmith-mcp", "--root", "/absolute/workspace"]
     }
   }
 }
@@ -109,7 +115,13 @@ Real transfers include IT-Tools, TodoMVC, drawDB and Mermaid Live Editor. The mo
 
 The optional [Rea adapter](docs/rea.md) retains upstream analysis evidence separately from Portsmith's behavior checks. [Validation and benchmark index](docs/validation.md) · [Research history](docs/research.md).
 
+To develop from source:
+
 ```sh
+git clone https://github.com/punsnprotons/portsmith.git
+cd portsmith
+npm ci --ignore-scripts
+npm run browser:install
 npm run check          # Types, engine tests, generated command reference
 npm run release:clean # Clean install, browser, package consumer and audit checks
 ```

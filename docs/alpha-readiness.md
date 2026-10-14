@@ -1,6 +1,6 @@
 # Alpha readiness — 2026-10-14
 
-**Public source alpha: `portsmith-workbench@0.6.0-alpha.1`. npm remains unpublished.** The transfer engine is ready for scoped alpha evaluation, with the documented limitations below. Repository identity and private reporting are configured. Check hosted CI for the exact pushed revision.
+**Alpha release line: `portsmith-workbench@0.6.0-alpha.2`.** The transfer engine is ready for scoped alpha evaluation, with the documented limitations below. Repository identity and private reporting are configured. Check hosted CI for the exact pushed revision.
 
 ## Local release-preparation evidence
 
@@ -48,6 +48,6 @@ These are private local evidence references, not public downloads. Later packagi
 
 - Source repository: [punsnprotons/portsmith](https://github.com/punsnprotons/portsmith). Repository/support metadata are configured and private vulnerability reporting is enabled.
 - Hosted checks: [Node 22/24 on Ubuntu/macOS](https://github.com/punsnprotons/portsmith/actions/workflows/ci.yml). Inspect the exact commit and all four matrix jobs; local results above are separate evidence.
-- No npm package or GitHub release is published. `private: true` stays in place. An npm release requires a fresh name-availability check and explicit authorization.
+- npm publication is authorized for `0.6.0-alpha.2` on the `alpha` channel. Package configuration permits publication; that alone is not evidence of a registry release. Check [npm](https://www.npmjs.com/package/portsmith-workbench) for available versions. No GitHub release is created by the checks.
 
 This is an alpha with trusted host execution, bounded JS/TS support, Chromium-only browser checks and authored behavior contracts. It does not claim production readiness, a broad autonomous success rate, uniqueness or Rea parity.

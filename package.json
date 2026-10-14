@@ -1,7 +1,6 @@
 {
   "name": "portsmith-workbench",
-  "version": "0.6.0-alpha.1",
-  "private": true,
+  "version": "0.6.0-alpha.2",
   "description": "Stage a repository feature in another app and verify a declared behavior contract.",
   "type": "module",
   "license": "MIT",
@@ -28,13 +27,16 @@
     "CHANGELOG.md",
     "THIRD_PARTY_NOTICES.md",
     "portsmith.model.json",
-    ".env.example"
+    ".env.example",
+    "scripts/run-demo.mjs"
   ],
   "engines": {
-    "node": ">=22"
+    "node": "^22.19.0 || >=24.11.0"
   },
   "bin": {
-    "portsmith": "./src/cli.mjs"
+    "portsmith": "./src/cli.mjs",
+    "portsmith-demo": "./scripts/run-demo.mjs",
+    "portsmith-mcp": "./src/mcp.mjs"
   },
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
@@ -51,7 +53,8 @@
     "format": "prettier --write src scripts test",
     "release:check": "node scripts/release-check.mjs",
     "release:clean": "node scripts/release-check.mjs --clean",
-    "audit:release": "node scripts/audit-dependencies.mjs"
+    "audit:release": "node scripts/audit-dependencies.mjs",
+    "release:published": "node scripts/release-check.mjs --clean --published"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.1",
@@ -78,5 +81,10 @@
   "bugs": {
     "url": "https://github.com/punsnprotons/portsmith/issues"
   },
-  "homepage": "https://github.com/punsnprotons/portsmith#readme"
+  "homepage": "https://github.com/punsnprotons/portsmith#readme",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha",
+    "registry": "https://registry.npmjs.org/"
+  }
 }
